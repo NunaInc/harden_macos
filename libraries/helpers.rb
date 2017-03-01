@@ -20,24 +20,24 @@
 # If a user is logged in, /dev/console is always owned by them. Returns the
 # username.
 def uid_user
-  user_uid = File.stat('/dev/console').uid
-  require 'etc'
-  Etc.getpwuid(user_uid).name
+  id_output = Mixlib::ShellOut.new('id -un')
+  id_output.run_command
+  unless id_output.error? # Will only return stdout if no error
+    id_output.stdout.strip
+  else
+    ''
+  end
 end
 
 # Checks against the string returned by uid_user. Returns nil if uid_user is
 # root or a system user (which start with an underscore).
 def current_user
-  if node['platform'] == 'mac_os_x'
-    if uid_user == 'root'
-      nil
-    elsif /^_\w*\z/.match(uid_user)
-      nil
-    else
-      uid_user
-    end
+  if uid_user == 'root'
+    nil
+  elsif /^_\w*\z/.match(uid_user)
+    nil
   else
-    raise 'Platform is not currently supported in helpers/current_user'
+    uid_user
   end
 end
 

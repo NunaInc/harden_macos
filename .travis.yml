@@ -19,6 +19,9 @@ before_script:
   - eval "$(/opt/chefdk/bin/chef shell-init bash)"
   # We have to install chef-sugar for ChefSpec
   - /opt/chefdk/embedded/bin/chef gem install chef-sugar
+  # TODO: Remove this work-around for a Hashie::Mash WARNing
+  # details: https://github.com/chef/chef-dk/issues/1157
+  - /opt/chefdk/embedded/bin/chef gem install berkshelf
 script:
   - /opt/chefdk/embedded/bin/chef --version
   - /opt/chefdk/embedded/bin/foodcritic --version

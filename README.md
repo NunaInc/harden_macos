@@ -1,4 +1,7 @@
 # harden_macos Cookbook
+
+[![Build Status](https://travis-ci.org/NunaInc/harden_macos.svg?branch=master)](https://travis-ci.org/NunaInc/harden_macos)
+
 This cookbook covers several areas of hardening for macOS and has generally 
 only been tested for OSX version 10.11.x and 10.12.x.
 
