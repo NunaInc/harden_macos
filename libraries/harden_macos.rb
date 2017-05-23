@@ -166,14 +166,14 @@ module OSHardeningCookbookMacOS
       #   system, AppleScript."
       execute 'Disable Apple Remote Events' do
         command 'systemsetup -setremoteappleevents off'
-        only_if 'systemsetup -getremoteappleevents | grep'\
+        only_if 'systemsetup -getremoteappleevents | grep '\
                 '"Remote Apple Events: On"'
       end
 
       # Note: the agent does not start by default on 10.11
       execute 'Disable remote management' do
         command '/System/Library/CoreServices/RemoteManagement/ARDAgent.app'\
-                '/Contents/Resources/kickstart -deactivate -stop -configure'\
+                '/Contents/Resources/kickstart -deactivate -stop -configure '\
                 '-access -off'
         only_if 'ps -ef | egrep "/System/Library/CoreServices/Remote'\
                 'Management/ARDAgent.app/Contents/MacOS/[A]RDAgent"'

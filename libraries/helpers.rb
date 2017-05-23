@@ -20,23 +20,33 @@
 # If a user is logged in, /dev/console is always owned by them. Returns the
 # username.
 def uid_user
-  id_output = Mixlib::ShellOut.new('id -un')
-  id_output.run_command
-  unless id_output.error? # Will only return stdout if no error
-    id_output.stdout.strip
-  else
-    ''
+  if node['platform'] == 'mac_os_x'
+    user_uid = File.stat('/dev/console').uid
+    require 'etc'
+    Etc.getpwuid(user_uid).name
+  else # Required to allow testing in Travis CI (Linux). Otherwise not used
+    id_output = Mixlib::ShellOut.new('id -un')
+    id_output.run_command
+    unless id_output.error? # Will only return stdout if no error
+      id_output.stdout.strip
+    else
+      ''
+    end
   end
 end
 
 # Checks against the string returned by uid_user. Returns nil if uid_user is
 # root or a system user (which start with an underscore).
 def current_user
-  if uid_user == 'root'
-    nil
-  elsif /^_\w*\z/.match(uid_user)
-    nil
-  else
+  if node['platform'] == 'mac_os_x'
+    if uid_user == 'root'
+      nil
+    elsif /^_\w*\z/.match(uid_user)
+      nil
+    else
+      uid_user
+    end
+  else # Required to allow testing in Travis CI (Linux). Otherwise not used
     uid_user
   end
 end

@@ -14,7 +14,7 @@ only been tested for OSX version 10.11.x and 10.12.x.
 - `10.12.x`
 
 ### cookbooks
-- `mac_os_x` - For userdefaults custom resource to do Library defaults write commands
+- `mac_os_x` - For userdefaults custom resource to do Library defaults write commands. NOTE: In order to work with Chef 13, you must have the change from this PR in your mac_os_x cookbook https://github.com/sous-chefs/mac_os_x/pull/25 
 
 ## Attributes
 Descriptions for all attributes are located in attributes/default.rb
