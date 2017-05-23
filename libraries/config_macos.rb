@@ -87,9 +87,9 @@ module OSHardeningCookbookMacOS
       # Enabling FileVault2 also automatically deletes this key and it
       #   cannot be enabled while FileVault2 is enabled.
       execute 'Disable automatic login' do
-        command 'defaults delete /Library/Preferences/com.apple.loginwindow'\
+        command 'defaults delete /Library/Preferences/com.apple.loginwindow '\
                 'autoLoginUser'
-        only_if 'defaults read /Library/Preferences/com.apple.loginwindow |'\
+        only_if 'defaults read /Library/Preferences/com.apple.loginwindow | '\
                 'grep "autoLoginUser"'
       end
 
@@ -134,7 +134,7 @@ module OSHardeningCookbookMacOS
       execute 'Idle to screensaver time' do
         user new_resource.user
         command 'defaults -currentHost write com.apple.screensaver idleTime 300'
-        not_if 'defaults -currentHost read com.apple.screensaver idleTime |'\
+        not_if 'defaults -currentHost read com.apple.screensaver idleTime | '\
                 'grep ^300$', user => new_resource.user
       end
     end

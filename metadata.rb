@@ -8,3 +8,5 @@ version          '1.0.0'
 issues_url       'https://github.com/NunaInc/harden_macos/issues'
 source_url       'https://github.com/NunaInc/harden_macos'
 depends          'mac_os_x'
+chef_version     '>= 12.5' if respond_to?(:chef_version)
+supports         'mac_os_x'
