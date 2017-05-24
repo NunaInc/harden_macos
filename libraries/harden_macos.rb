@@ -236,49 +236,47 @@ module OSHardeningCookbookMacOS
       current_ssh_config = '/etc/ssh/ssh_config'
       ssh_config_version = '/vulns/ssh_config1011+'
 
-      unless current_ssh_config.nil?
-        require 'FileUtils'
-        require 'tmpdir'
+      require 'FileUtils'
+      require 'tmpdir'
 
-        # Create directory to hold new ssh config.  This must be done outside
-        # a ruby_block so that it can be used in the cookbook_file below
-        temp_dir = Dir.mktmpdir()
-        puts(__method__.to_s + ": temporary directory is: " + temp_dir)
-        new_ssh_config_path = temp_dir + '/ssh_config'
+      # Create directory to hold new ssh config.  This must be done outside
+      # a ruby_block so that it can be used in the cookbook_file below
+      temp_dir = Dir.mktmpdir
+      puts(__method__.to_s + ': temporary directory is: ' + temp_dir)
+      new_ssh_config_path = temp_dir + '/ssh_config'
 
-        # Copy ssh_config from the cookbook and place into temporary directory
-        cookbook_file "Secure SSH config file" do
-          source ssh_config_version
-          path new_ssh_config_path
-          owner 'root'
-          group 'wheel'
-          action :create
+      # Copy ssh_config from the cookbook and place into temporary directory
+      cookbook_file 'Secure SSH config file' do
+        source ssh_config_version
+        path new_ssh_config_path
+        owner 'root'
+        group 'wheel'
+        action :create
+      end
+
+      # Rename existing ssh_config and then copy over the new config
+      #   The existing (original) ssh_config has the day, time, and .bak
+      #   appended to the file name. Only then does it copy over the new
+      #   ssh_config file
+      #
+      ruby_block 'rename original ssh_config and copy over new config' do
+        block do
+          # puts(__method__.to_s + ": Swapping in new ssh config" + temp_dir)
+          File.rename(current_ssh_config, current_ssh_config + Time.now.strftime('%Y-%m-%d_%H%M') + '.bak') unless current_ssh_config.empty?
+          FileUtils.mv new_ssh_config_path, current_ssh_config unless current_ssh_config.empty?
         end
+        not_if { FileUtils.compare_file(new_ssh_config_path, current_ssh_config) }
+      end # ruby block
 
-        # Rename existing ssh_config and then copy over the new config
-        #   The existing (original) ssh_config has the day, time, and .bak
-        #   appended to the file name. Only then does it copy over the new
-        #   ssh_config file
-        #
-        ruby_block 'rename original ssh_config and copy over new config' do
-          block do
-            # puts(__method__.to_s + ": Swapping in new ssh config" + temp_dir)
-            File.rename(current_ssh_config, current_ssh_config + Time.now.strftime("%Y-%m-%d_%H%M") + '.bak') unless current_ssh_config.empty?
-            FileUtils.mv new_ssh_config_path, current_ssh_config unless current_ssh_config.empty?
-          end
-          not_if { FileUtils.compare_file(new_ssh_config_path, current_ssh_config) }
-        end # ruby block
-
-        # Clean up!
-        ruby_block 'Clean up temp directory' do
-          block do
-            FileUtils.rm_r temp_dir 
-          end
+      # Clean up!
+      ruby_block 'Clean up temp directory' do
+        block do
+          FileUtils.rm_r temp_dir
         end
+      end
+    end # harden_macos_ssh_configs
 
-      end #unless
-    end # def
-  end #module HardeningHelpers
+  end # module HardeningHelpers
 end # module OSHardeningCookbookMacOS
 
 Chef::Recipe.send(:include, OSHardeningCookbookMacOS::HardeningHelpers)
