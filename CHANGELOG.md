@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of the harden_macos cookbook.
 
+1.0.1
+-----
+- Fixes to spacing, as well as a note in readme about chef 13 compatibility
+
+
 1.0.0
 -----
 - Initial release of harden_macos cookbook to open source.
