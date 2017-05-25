@@ -40,8 +40,8 @@ default['harden_os']['harden_tasks'] = \
 
 default['harden_os']['userdefaults']['fast_user_switching']              = 'disable'
 default['harden_os']['userdefaults']['guest_account_login']              = 'disable'
-default['harden_os']['userdefaults']['guest_access_AFP']                 = 'disable'
-default['harden_os']['userdefaults']['guest_access_SMB']                 = 'disable'
+default['harden_os']['userdefaults']['guest_shared_folder_access_AFP']   = 'disable'
+default['harden_os']['userdefaults']['guest_shared_folder_access_SMB']   = 'disable'
 default['harden_os']['userdefaults']['lock_screen_password_hints']       = 'disable'
 default['harden_os']['userdefaults']['localization_icon_in_toolbar']     = 'enable'
 
