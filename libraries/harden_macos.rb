@@ -27,11 +27,16 @@ module OSHardeningCookbookMacOS
       #   1 = enable firewall and disables "Block All Incoming Connections"
       #   2 = enable firewall and enable the setting "Block All Incoming
       #   Connections."
-      mac_os_x_userdefaults 'Enable OS X system firewall' do
-        domain '/Library/Preferences/com.apple.alf'
-        key 'globalstate'
-        value 1
-        only_if { File.exist? '/Library/Preferences/com.apple.alf.plist' }
+      attr = enableness(node['harden_os']['userdefaults']['macos_system_firewall'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0 
+
+        mac_os_x_userdefaults 'Enable OS X system firewall' do
+          domain '/Library/Preferences/com.apple.alf'
+          key 'globalstate'
+          value i
+          only_if { File.exist? '/Library/Preferences/com.apple.alf.plist' }
+        end
       end
 
       execute 'Enable firewall stealthmode' do
@@ -43,53 +48,80 @@ module OSHardeningCookbookMacOS
 
     def harden_macos_app_safari
       puts("\nHardening Library: " + __method__.to_s)
-      mac_os_x_userdefaults 'Safari disable opening files after downloading' do
-        domain 'com.apple.Safari'
-        key 'AutoOpenSafeDownloads'
-        value 0
-        user new_resource.user
+
+      attr = enableness(node['harden_os']['userdefaults']['safari_open_files_after_download'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0 
+
+        mac_os_x_userdefaults 'Safari disable opening files after downloading' do
+          domain 'com.apple.Safari'
+          key 'AutoOpenSafeDownloads'
+          value i
+          user new_resource.user
+        end
       end
 
       # Safari's separate setting (separate from Spotlight) for search metrics
-      mac_os_x_userdefaults 'Disable Safari Spotlight Suggestions' do
-        domain 'com.apple.Safari'
-        key 'UniversalSearchEnabled'
-        value 0
-        user new_resource.user
+      attr = enableness(node['harden_os']['userdefaults']['safari_spotlight_suggestions'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0 
+
+        mac_os_x_userdefaults 'Disable Safari Spotlight Suggestions' do
+          domain 'com.apple.Safari'
+          key 'UniversalSearchEnabled'
+          value i
+          user new_resource.user
+        end
       end
     end
 
     def harden_macos_app_mail
       puts("\nHardening Library: " + __method__.to_s)
+
       # com.apple.mail-shared only exists setup of Mail.app was initiated
-      mac_os_x_userdefaults 'Disable autoload remote content in Mail.app' do
-        domain 'com.apple.mail-shared'
-        key 'DisableURLLoading'
-        value 1
-        only_if { File.exist? "/Users/#{node['harden_os']['user']}/Library"\
-        "/Preferences/com.apple.mail-shared.plist" }
+      attr = enableness(node['harden_os']['userdefaults']['mail_autoload_remote_content'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0 
+
+        mac_os_x_userdefaults 'Disable autoload remote content in Mail.app' do
+          domain 'com.apple.mail-shared'
+          key 'DisableURLLoading'
+          value i
+          only_if { File.exist? "/Users/#{node['harden_os']['user']}/Library"\
+          "/Preferences/com.apple.mail-shared.plist" }
+      end
       end
     end
 
     def harden_macos_devices
       puts("\nHardening Library: " + __method__.to_s)
 
-      mac_os_x_userdefaults 'Disable the IR controller (Apple Remote)' do
-        domain '/Library/Preferences/com.apple.driver.AppleIRController'
-        key 'DeviceEnabled'
-        value 0
-        only_if { File.exist? '/Library/Preferences/com.apple.driver.AppleIRController.plist' }
+      attr = enableness(node['harden_os']['userdefaults']['apple_remote_ir_controller'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0 
+
+        mac_os_x_userdefaults 'Disable the IR controller (Apple Remote)' do
+          domain '/Library/Preferences/com.apple.driver.AppleIRController'
+          key 'DeviceEnabled'
+          value i
+          only_if { File.exist? '/Library/Preferences/com.apple.driver.AppleIRController.plist' }
+        end
       end
 
       bluetooth_powerstate = Mixlib::ShellOut.new('defaults read /Library/Preferences/com.apple.Bluetooth ControllerPowerState | grep 1')
       if bluetooth_powerstate.run_command
         # Turn off Bluetooth, but only if no paired devices exist
-        mac_os_x_userdefaults 'Turn off Bluetooth' do
-          domain '/Library/Preferences/com.apple.Bluetooth'
-          key 'ControllerPowerState'
-          value 0
-          notifies :run, 'execute[Kill bluetooth server process]', :delayed
-          not_if 'system_profiler SPBluetoothDataType | grep "^Bluetooth:" -A 20 | grep "Connectable: Yes"'
+        attr = enableness(node['harden_os']['userdefaults']['bluetooth_if_unpaired'])
+          unless attr.nil?
+          attr == 'enable' ? i = 1 : i = 0 
+
+          mac_os_x_userdefaults 'Turn off Bluetooth' do
+            domain '/Library/Preferences/com.apple.Bluetooth'
+            key 'ControllerPowerState'
+            value i
+            notifies :run, 'execute[Kill bluetooth server process]', :delayed
+            not_if 'system_profiler SPBluetoothDataType | grep "^Bluetooth:" -A 20 | grep "Connectable: Yes"'
+          end
         end
       end
 

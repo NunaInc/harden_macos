@@ -52,31 +52,53 @@ module OSHardeningCookbookMacOS
     def configure_macos_user_prefs
       puts("\nConfigurations Library: " + __method__.to_s)
 
-      # Takes effect after logout/login
-      mac_os_x_userdefaults 'Disable fast user switching' do
-        domain '/Library/Preferences/.GlobalPreferences'
-        key 'MultipleSessionEnabled'
-        value 0
+      attr = enableness(node['harden_os']['userdefaults']['fast_user_switching'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        # Takes effect after logout/login
+        mac_os_x_userdefaults 'Disable fast user switching' do
+          domain '/Library/Preferences/.GlobalPreferences'
+          key 'MultipleSessionEnabled'
+          value i
+        end
       end
     end
 
     def configure_macos_user_permissions
       puts("\nConfigurations Library: " + __method__.to_s)
 
-      mac_os_x_userdefaults 'Disable guest account login' do
-        domain '/Library/Preferences/com.apple.loginwindow'
-        key 'GuestEnabled'
-        value 0
+      attr = enableness(node['harden_os']['userdefaults']['guest_account_login'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        mac_os_x_userdefaults 'Disable guest account login' do
+          domain '/Library/Preferences/com.apple.loginwindow'
+          key 'GuestEnabled'
+          value i
+        end
       end
-      mac_os_x_userdefaults 'Disable guest access to shared folders (AFP sharing)' do
-        domain '/Library/Preferences/com.apple.AppleFileServer'
-        key 'guestAccess'
-        value 0
+
+      attr = enableness(node['harden_os']['userdefaults']['guest_shared_folder_access_AFP'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        mac_os_x_userdefaults 'Disable guest access to shared folders (AFP sharing)' do
+          domain '/Library/Preferences/com.apple.AppleFileServer'
+          key 'guestAccess'
+          value i
+        end
       end
-      mac_os_x_userdefaults 'Disable guest access to shared folders (SMB sharing)' do
-        domain '/Library/Preferences/SystemConfiguration/com.apple.smb.server'
-        key 'AllowGuestAccess'
-        value 0
+
+      attr = enableness(node['harden_os']['userdefaults']['guest_shared_folder_access_SMB'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        mac_os_x_userdefaults 'Disable guest access to shared folders (SMB sharing)' do
+          domain '/Library/Preferences/SystemConfiguration/com.apple.smb.server'
+          key 'AllowGuestAccess'
+          value i
+        end
       end
 
     end
@@ -104,12 +126,17 @@ module OSHardeningCookbookMacOS
       #   Note: Does not uncheck Login Options -> Show password hints, but still sets
       #   the retries until hint at zero (disabled).
       #
-      mac_os_x_userdefaults 'Disable password hints on lock screen' do
-        domain 'com.apple.loginwindow'
-        key 'RetriesUntilHint'
-        value '0'
-        type 'int'
-        sudo true
+      attr = enableness(node['harden_os']['userdefaults']['lock_screen_password_hints'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        mac_os_x_userdefaults 'Disable password hints on lock screen' do
+          domain 'com.apple.loginwindow'
+          key 'RetriesUntilHint'
+          value i
+          type 'int'
+          sudo true
+        end
       end
     end
 
@@ -146,10 +173,15 @@ module OSHardeningCookbookMacOS
       #   Sys Preferences -> Security & Privacy => Privacy => Location Services
       #   Select "System Services" and click "Details...". Check "Show location
       #   icon in the menu bar when System Services request your location".
-      mac_os_x_userdefaults 'Show icon in toolbar when localization is used' do
-        domain '/Library/Preferences/com.apple.locationmenu'
-        key 'ShowSystemServices'
-        value 1
+      attr = enableness(node['harden_os']['userdefaults']['localization_icon_in_toolbar'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        mac_os_x_userdefaults 'Show icon in toolbar when localization is used' do
+          domain '/Library/Preferences/com.apple.locationmenu'
+          key 'ShowSystemServices'
+          value i
+        end
       end
     end
 

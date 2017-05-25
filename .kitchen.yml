@@ -9,8 +9,8 @@ provisioner:
   #log_level: debug
 
 platforms:
-  - name: macosx1011
-    driver:
+   - name: macosx1011
+     driver:
       synced_folders:
         - [".", "/vagrant", "owner: :vagrant, group: :wheel, create: true, type: :rsync"]
         - ["~/.kitchen/cache", "/tmp/omnibus/cache", "owner: :vagrant, group: :wheel, create: true, type: :rsync"]

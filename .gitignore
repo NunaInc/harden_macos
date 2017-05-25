@@ -16,3 +16,4 @@ bin/*
 .kitchen.local.yml
 
 .DS_Store
+Vagrantfile
