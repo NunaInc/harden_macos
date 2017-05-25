@@ -44,6 +44,11 @@ default['harden_os']['userdefaults']['guest_access_AFP']                 = 'disa
 default['harden_os']['userdefaults']['guest_access_SMB']                 = 'disable'
 default['harden_os']['userdefaults']['lock_screen_password_hints']       = 'disable'
 default['harden_os']['userdefaults']['localization_icon_in_toolbar']     = 'enable'
+
+default['harden_os']['config_tasks'] = \
+  ['updates', 'user preferences', 'user permissions', 'login window', 'sleep',\
+   'privacy']
+
 default['harden_os']['userdefaults']['macos_system_firewall']            = 'enable'
 default['harden_os']['userdefaults']['safari_open_files_after_download'] = 'disable'
 default['harden_os']['userdefaults']['safari_spotlight_suggestions']     = 'disable'
@@ -51,7 +56,3 @@ default['harden_os']['userdefaults']['mail_autoload_remote_content']     = 'disa
 default['harden_os']['userdefaults']['apple_remote_ir_controller']       = 'disable'
 default['harden_os']['userdefaults']['bluetooth_if_unpaired']            = 'disable'
 default['harden_os']['userdefaults']['sierra_smartcard_support']         = 'disable'
-
-default['harden_os']['config_tasks'] = \
-  ['updates', 'user preferences', 'user permissions', 'login window', 'sleep',\
-   'privacy']
