@@ -61,3 +61,15 @@ def valid_current_user
     true
   end
 end
+
+def enableness(attribute)
+  if attribute == 'enable' #add some logic for being okay with any case
+    attribute
+  elsif attribute == 'disable' #add some logic for being okay with any case
+    attribute
+  elsif attribute.nil?
+    attribute
+  else
+    raise "#{attribute} is not a valid value"
+  end
+end

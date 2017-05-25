@@ -52,11 +52,16 @@ module OSHardeningCookbookMacOS
     def configure_macos_user_prefs
       puts("\nConfigurations Library: " + __method__.to_s)
 
-      # Takes effect after logout/login
-      mac_os_x_userdefaults 'Disable fast user switching' do
-        domain '/Library/Preferences/.GlobalPreferences'
-        key 'MultipleSessionEnabled'
-        value 0
+      attr = enableness(node['harden_os']['userdefaults']['fast_user_switching'])
+        unless attr.nil?
+        attr == 'enable' ? i = 1 : i = 0
+
+        # Takes effect after logout/login
+        mac_os_x_userdefaults 'Disable fast user switching' do
+          domain '/Library/Preferences/.GlobalPreferences'
+          key 'MultipleSessionEnabled'
+          value i
+        end
       end
     end
 
